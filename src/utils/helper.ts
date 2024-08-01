@@ -1,74 +1,174 @@
-// export const zoom = (
-//   canvas: HTMLCanvasElement,
-//   img: HTMLImageElement,
-//   ctx:any,
-//   x:number,
-//   y:number
-// ) => {
-//   ctx.drawImage(
-//     canvas,
-//     Math.min(Math.max(0, x - 5), img.width - 10),
-//     Math.min(Math.max(0, y - 5), img.height - 10),
-//     10,
-//     10,
-//     0,
-//     0,
-//     300,
-//     300,
-//   );
-// };
-
-export const calcPath = (start:Point, end: Point) => {
-  const path: Point[] = [];
-  let diffX = end.x - start.x;
-  let diffY = end.y - start.y;
-  let point = start;
-  let isUpdateX = true;
-  // console.log("start");
-  while (diffX !== 0 || diffY !== 0) {
-    if (isUpdateX) {
-      if (diffX > 0) {
-        point = {x: point.x + 30, y: point.y}
-        diffX = end.x - point.x;
-        path.push(point);
-      } else if (diffX < 0) {
-        point = {x: point.x - 30, y: point.y}
-        diffX = end.x + point.x;
-        path.push(point);
-      }
-      isUpdateX = false;
-    } else {
-      if (diffY > 0) {
-        point = {x: point.x, y: point.y + 30}
-        diffY = end.y - point.y;
-        path.push(point);
-      } else if (diffY < 0) {
-        point = {x: point.x, y: point.y - 30}
-        diffY = end.y + point.y;
-        path.push(point);
-      }
-      isUpdateX = true;
-    }
-  }
-  // console.log('end');
-  return path
-}
-export const fitVertex = (x: number, y: number, scale: number) => {
-  x = x%scale >= (0.5*scale) ? x + scale - (x%scale) : x - (x%scale);
-  y = y%scale >= (0.5*scale) ? y + scale - (y%scale) : y - (y%scale);
-  return {x:x, y:y};
+type Point = {
+  x: number;
+  y: number;
 }
 
 export const inverseScaled = (x: number, y: number, scale: number) => {
   x = Math.round(x/scale);
   y = Math.round(y/scale);
-  // const invScale = 1 / scale;
-  // x = x%invScale >= 0.5 ? x + 1 - (x%1) : x - (x%1);
-  // y = y%invScale >= 0.5 ? y + 1 - (y%1) : y - (y%1);
   return {x:x, y:y};
 }
 
-type Point = {
-  x: number;
-  y: number;
-};
+export const isClickOnCircle = (click: Point, circleCenter: Point, radius: number) => {
+  const distance = Math.sqrt(
+    Math.pow(circleCenter.x - click.x, 2) + Math.pow(circleCenter.y - click.y, 2)
+  )
+  return (distance <= radius)
+}
+
+export const hexToRgb = (hex: string) => {
+  // '#' を除去する
+  hex = hex.replace(/^#/, '');
+
+  // 3桁の16進数を6桁に変換する（例: #fff -> #ffffff）
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('');
+  }
+
+  // 16進数を10進数に変換する
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgb(${r},${g},${b})`;
+}
+
+export const hexToRgba = (hex: string) => {
+  // '#' を除去する
+  hex = hex.replace(/^#/, '');
+
+  // 3桁の16進数を6桁に変換する（例: #fff -> #ffffff）
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('');
+  }
+
+  // 16進数を10進数に変換する
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgba(${r},${g},${b},0.5)`;
+}
+
+export const rgbToHex = (rgb: string) => {
+  // RGB文字列を分割し、各値を取り出す
+  const result = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
+
+  // RGB値を16進数に変換する
+  if (result) {
+    const r = parseInt(result[1], 10);
+    const g = parseInt(result[2], 10);
+    const b = parseInt(result[3], 10);
+
+    const toHex = (n: number) => {
+      const hex = n.toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  // 無効なRGB文字列の場合はnullを返す
+  return null;
+}
+
+export const findColorRegions = (
+  data,
+  width: number,
+  height: number,
+  targetColor: number[]
+) => {
+  const visited = new Array(width * height).fill(false);
+  console.log(visited.length);
+  const paths = [];
+
+  function matchesColor(r: number, g: number, b: number) {
+    return r === targetColor[0]
+            && g === targetColor[1]
+            && b === targetColor[2];
+  }
+
+  function getPixelIndex(x: number, y: number) {
+    return (y * width + x) * 4;
+  }
+
+  function mooreNeighborTracing(sx, sy) {
+    const boundary = [];
+    let cx = sx;
+    let cy = sy;
+    let prevDir = 0;
+    const directions = [
+      [-1, 0], [0, -1],
+      [1, 0], [0, 1]
+    ];
+
+    do {
+      boundary.push([cx, cy]);
+      visited[cy * width + cx] = true;
+
+      let foundNext = false;
+      for (let i = 0; i < directions.length; i++) {
+        const dir = (prevDir + 1 + i) % directions.length;
+        const [dx, dy] = directions[dir];
+        const nx = cx + dx;
+        const ny = cy + dy;
+
+        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+          const index = getPixelIndex(nx, ny);
+          if (matchesColor(data[index], data[index + 1], data[index + 2])) {
+            // console.log(cx, cy);
+            cx = nx;
+            cy = ny;
+            prevDir = (dir + 2) % directions.length;
+            foundNext = true;
+            break;
+          }
+        }
+      }
+
+      if (!foundNext) break;
+    } while (cx !== sx || cy !== sy);
+
+    return boundary;
+  }
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (visited[y * width + x]) continue;
+
+      const index = getPixelIndex(x, y);
+      const r = data[index];
+      const g = data[index + 1];
+      const b = data[index + 2];
+
+      if (matchesColor(r, g, b)) {
+        // console.log(x, y);
+        const boundary = mooreNeighborTracing(x, y);
+        if (boundary.length > 0) {
+          paths.push(boundary);
+          console.log('debug push path')
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+export const drawPaths = (paths, ctx) => {
+  paths.forEach(path => {
+    ctx.fillStyle = 'rgba(255,0,0,0.5)';
+    ctx.strokeStyle = 'rgba(255,0,0,0.5)';
+    ctx.beginPath();
+    path.forEach(([x, y], index) => {
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.closePath();
+    ctx.stroke();
+    // ctx.fill()
+  });
+}
