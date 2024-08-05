@@ -13,6 +13,7 @@ const LabelWidget = () => {
   React.useEffect(() => {
     if (!selectedLabelId) {
       Object.keys(labelBoxRefs.current).map((key) => {
+        if (!labelBoxRefs.current[key]) return;
         labelBoxRefs.current[key].style.border = '1px solid white';
       });
       setMode('default');
@@ -42,48 +43,69 @@ const LabelWidget = () => {
       setSelectedLabelId(id);
     }
   }
+  console.log("label", labels);
 
   return (
-    <div>
-      <div>
-        <h4 style={{margin:0, padding:0}}>Label List</h4>
+    <div
+      style={{
+        // padding: '5px'
+      }}
+    >
+      <div
+        style={{
+          // backgroundColor: '#f00'
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: '10px'
+        }}
+      >
+        <img src="/title_icon.png" width={40} height={40}/>
+        <h3 style={{padding: "10px 5px", margin:0, }}>Segmentor 2D</h3>
       </div>
+      <hr style={{marginTop: 0}} />
       <div
         style={{
           display: 'flex',
-          justifyContent:'space-between'
+          justifyContent:'space-between',
+          padding: "5px 10px"
         }}
       >
-        <button
-          style={{
-            display: 'flex',
-            justifyContent: 'start',
-          }}
-          onClick={() => setAdd(true)}
-        >
-          +Add
-        </button>
-        {add && (
+        {add ? (
           <button
             style={{
               display: 'flex',
               justifyContent: 'end',
+              fontSize: "18px"
             }}
             onClick={() => setAdd(false)}
           >
             Cancel
           </button>
+        ) : (
+            <button
+              style={{
+                display: 'flex',
+                justifyContent: 'start',
+                fontSize: "18px"
+              }}
+              onClick={() => setAdd(true)}
+            >
+              +Add
+            </button>
         )}
+
       </div>
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          padding: '0 10px',
         }}
       >
         {add
           ? <LabelAdd setAdd={setAdd}/>
-          : labels.map((label) => (
+          : labels.length !== 0 ? (labels.map((label) => (
               <LabelBox
                 key={label.id}
                 ref={(el) => {
@@ -92,7 +114,7 @@ const LabelWidget = () => {
                 label={label}
                 onClick={() => onClickHandler(label.id)}
               />
-            ))
+            ))) : <div style={{display: 'flex', justifyContent: 'center', fontWeight: 'bold'}}>No Label</div>
         }
       </div>
     </div>

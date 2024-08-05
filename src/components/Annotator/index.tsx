@@ -3,7 +3,8 @@ import { imageContext, labelContext, toolContext } from '../../utils/context'
 import ImageCanvas from '../ImageCanvas';
 import LabelWidget from '../LabelWidget';
 import ToolWidget from '../ToolWidget';
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaDownload } from "react-icons/fa";
+import { Tooltip } from 'react-tooltip';
 // import { FaBeer } from 'react-icons/fa';
 
 const Annotator = () => {
@@ -15,6 +16,7 @@ const Annotator = () => {
   const [selectedImgId, setSelectedImgId] = React.useState(imageIds[0]);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const imageRef = React.useRef<HTMLImageElement>(new Image());
+  const iconSize = 30;
 
   const nextHandler = () => {
     const imgIdx:number = imageIds.findIndex((imageId) => imageId === selectedImgId);
@@ -37,7 +39,7 @@ const Annotator = () => {
   const downloadHandler = () => {
     const canvas = canvasRef.current!;
     const img = imageRef.current!;
-    img.src = images[selectedImgId].maskName;
+    img.src = images[selectedImgId].name;
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
@@ -75,7 +77,7 @@ const Annotator = () => {
         const dataURL = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.href = dataURL;
-        link.download = images[selectedImgId].maskName.replace('/public/dataset/masks/', '');
+        link.download = images[selectedImgId].name.replace('/public/dataset/images/', '').replace('jpg', 'png');
         link.click();
       }
       // setDonwloaded(true);
@@ -86,12 +88,12 @@ const Annotator = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '200px 1fr',
+          gridTemplateColumns: '250px 1fr',
           height: "100%",
           // background: "#0f0"
         }}
       >
-        <div style={{width: "200px", background: '#eee'}}>
+        <div style={{width: "250px", background: '#eee'}}>
           <LabelWidget/>
         </div>
         <div
@@ -99,17 +101,38 @@ const Annotator = () => {
             display: 'flex',
             flexDirection: 'column',
             height: "100%",
-
+            // position: 'relative',
             // background: "#00f"
           }}
         >
-          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-            <div>
-            <button onClick={backHandler}><FaChevronLeft /></button>
-            <button onClick={nextHandler}><FaChevronRight /></button>
-            <ToolWidget />
-            </div>
-            <button style={{justifyContent: 'end'}} onClick={downloadHandler}>Download</button>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'absolute',
+            right: '0'
+          }}>
+            <button id="back-image" onClick={backHandler}>
+              <FaChevronLeft size={iconSize} style={{padding: '5px', margin: '5px'}} />
+            </button>
+            <button id="next-image" onClick={nextHandler}>
+              <FaChevronRight size={iconSize} style={{padding: '5px', margin: '5px'}}  />
+            </button>
+            <ToolWidget size={iconSize} style={{padding: '5px', margin: '5px'}} />
+            <button id="download" onClick={downloadHandler}>
+              <FaDownload size={iconSize} style={{padding: '5px', margin: '5px'}}  />
+            </button>
+            <Tooltip
+              anchorSelect="#back-image"
+              content="Previous Image"
+            />
+            <Tooltip
+              anchorSelect="#next-image"
+              content="Next Image"
+            />
+            <Tooltip
+              anchorSelect="#download"
+              content="Download Annotation Image"
+            />
           </div>
           <div
             style={{

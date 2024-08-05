@@ -477,7 +477,7 @@ const ImageCanvas = ({selectedImgId}: Props) => {
               ctx.lineTo(point.x, point.y);
               ctx.closePath();
               ctx.fill();
-              ctx.stroke();
+              // ctx.stroke();
             }
             else {
               ctx.lineTo(point.x, point.y);
@@ -540,51 +540,6 @@ const ImageCanvas = ({selectedImgId}: Props) => {
     paths
   ]);
 
-  // const downloadImage = () => {
-  //   const canvas = canvasRef.current!;
-  //   const img = imageRef.current!;
-  //   canvas.width = img.width;
-  //   canvas.height = img.height;
-  //   console.log(canvas.width, canvas.height);
-  //   const ctx = canvas.getContext('2d');
-  //   if (ctx) {
-  //     ctx.reset();
-  //     // ctx.lineWidth = 1 / scale;
-  //     ctx.imageSmoothingEnabled = false;
-  //     const instances = images[selectedImgId].instances;
-  //     instances.map((instance) => {
-  //       const rgb = instance.label.color.rgb;
-  //       const rgba = instance.label.color.rgba;
-  //       instance.paths.map((path) => {
-  //         ctx.globalCompositeOperation = path.type === 'edit' ? 'xor' : 'destination-out';
-  //         ctx.fillStyle = path.type === 'edit' ? rgba : rgb;
-  //         // console.log(path.type);
-  //         path.sequence.map((point, index) => {
-  //           if (index === 0) {
-  //             ctx.beginPath();
-  //             ctx.moveTo(point.x, point.y);
-  //           }
-  //           else if (index === path.length - 1) {
-  //             ctx.lineTo(point.x, point.y);
-  //             ctx.closePath();
-  //             ctx.fill();
-  //           }
-  //           else {
-  //             ctx.lineTo(point.x, point.y);
-  //           }
-  //         })
-  //       })
-  //     });
-
-  //     const dataURL = canvas.toDataURL('image/png');
-  //     const link = document.createElement('a');
-  //     link.href = dataURL;
-  //     link.download = fileName;
-  //     link.click();
-  //     setDonwloaded(true);
-  //   }
-  // }
-
   return (
     <div
       style={{
@@ -609,8 +564,12 @@ const ImageCanvas = ({selectedImgId}: Props) => {
       }}>
         <canvas
           style={{
+            display: 'block',
             // border: '1px solid #111',
-            background: "#aab",
+            // background: "#aab",
+            background: 'linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url(/grid.jpg)',
+            // backgroundImage: "url(/grid.jpg)",
+            backgroundSize: 'cover',
             width: "100%",
             height: "100%",
             cursor: mode === "default" ? 'grab' : mode === 'edit' ? 'default' : 'crosshair'

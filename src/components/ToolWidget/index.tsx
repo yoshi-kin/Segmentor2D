@@ -7,8 +7,12 @@ import { FaSearchPlus, FaSearchMinus, FaArrowUp, FaArrowDown, FaArrowRight, FaAr
 //   {value: 'edit', label: 'edit'},
 //   {value: 'erase', label: 'erase'}
 // ]
+type Props = {
+  size: number,
+  style: React.CSSProperties,
+}
 
-const ToolWidget = () => {
+const ToolWidget = ({size, style}: Props) => {
   const {
     mode,
     scale,
@@ -56,16 +60,16 @@ const ToolWidget = () => {
 
   return (
     <>
-      <button onClick={() => scaleHandler('up')}><FaSearchPlus /></button>
-      <button onClick={() => scaleHandler('down')}><FaSearchMinus /></button>
-      <button onClick={() => translateHandler('up')}><FaArrowUp /></button>
-      <button onClick={() => translateHandler('down')}><FaArrowDown /></button>
-      <button onClick={() => translateHandler('left')}><FaArrowLeft /></button>
-      <button onClick={() => translateHandler('right')}><FaArrowRight /></button>
+      <button onClick={() => scaleHandler('up')}><FaSearchPlus size={size} style={{...style}}/></button>
+      <button onClick={() => scaleHandler('down')}><FaSearchMinus size={size} style={{...style}}/></button>
+      <button onClick={() => translateHandler('up')}><FaArrowUp size={size} style={{...style}}/></button>
+      <button onClick={() => translateHandler('down')}><FaArrowDown size={size} style={{...style}}/></button>
+      <button onClick={() => translateHandler('left')}><FaArrowLeft size={size} style={{...style}}/></button>
+      <button onClick={() => translateHandler('right')}><FaArrowRight size={size} style={{...style}}/></button>
       {mode !== 'default'&& (
         <>
-        <button onClick={() => modeHandler('pen')} style={{opacity: mode === 'edit' ? 1 : 0.5}}><FaPen /></button>
-        <button onClick={() => modeHandler('eraser')} style={{opacity: mode === 'erase' ? 1 : 0.5}}><FaEraser /></button>
+        <button onClick={() => modeHandler('pen')} style={{opacity: mode === 'edit' ? 1 : 0.5}}><FaPen size={size} style={{...style}}/></button>
+        <button onClick={() => modeHandler('eraser')} style={{opacity: mode === 'erase' ? 1 : 0.5}}><FaEraser size={size} style={{...style}}/></button>
         </>
       )}
       {/* <select

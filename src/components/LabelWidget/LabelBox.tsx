@@ -1,7 +1,9 @@
 import React from 'react'
-import { Label } from '../../types'
+import { ImageProps, Label } from '../../types'
 import { rgbToHex } from '../../utils/helper'
-import { labelContext } from '../../utils/context'
+import { imageContext, labelContext } from '../../utils/context'
+import { FiMinus } from 'react-icons/fi';
+import { Tooltip } from 'react-tooltip';
 
 type Props = {
   label: Label,
@@ -9,11 +11,30 @@ type Props = {
 }
 
 const LabelBox = React.forwardRef<HTMLButtonElement, Props>(({label, onClick}, ref) => {
+  const {images, setImages} = React.useContext(imageContext);
+  const {selectedLabelId, setLabels, setSelectedLabelId} = React.useContext(labelContext);
+
   const colorHandler = (elementId: string) => {
     console.log('clicked');
     const element = document.getElementById(elementId);
     if (element) navigator.clipboard.writeText(element.textContent!);
   }
+
+  const removeHandler = (labelId: string) => {
+    console.log('remove label');
+    if (!confirm("Is the label removed ?")) return;
+    const newImages: {[id:string]: ImageProps} = {}
+    for (const imageId of Object.keys(images)) {
+      newImages[imageId] = {
+        ...images[imageId],
+        instances: images[imageId].instances.filter(prev => prev.label.id !== labelId)
+      }
+    }
+    setImages(newImages);
+    setLabels(prev => (prev.filter(label => label.id !== labelId)))
+    if (selectedLabelId !== labelId) setSelectedLabelId('');
+  }
+
   return (
     <button
       // id={label.id}
@@ -23,30 +44,42 @@ const LabelBox = React.forwardRef<HTMLButtonElement, Props>(({label, onClick}, r
         backgroundColor: '#ddd',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        fontSize: "18px",
+        padding: "5px"
       }}
       onClick={onClick}
     >
-      <label
-        htmlFor=""
+      <div
         style={{
-          // display: 'flex',
+          display: 'flex',
           justifyContent: 'start',
         }}
       >
-        {label.name}
-      </label>
+        <button
+          id="remove-label"
+          style={{
+            // backgroundColor: '#ddd',
+            border: "none",
+            padding: "5px",
+            borderRadius: "5px",
+          }}
+          onClick={() => removeHandler(label.id)}
+        >
+          <FiMinus size={20}/>
+        </button>
+      </div>
       <div
         style={{
           alignItems: 'center',
           justifyContent: 'end',
         }}
       >
-        <label
-          id={label.id}
-        >
-          {label.color.hex}
+        <label>
+          {/* {label.color.hex} */}
+          {label.name}
         </label>
+        <label id={label.id} hidden>{label.color.hex}</label>{" "}
         <div style={{ position: 'relative', display: 'inline-block' }}>
           <input
             type="color"
@@ -62,6 +95,7 @@ const LabelBox = React.forwardRef<HTMLButtonElement, Props>(({label, onClick}, r
             disabled
           />
           <div
+            id="copy-color"
             style={{
               position: 'absolute',
               top: 0,
@@ -75,6 +109,14 @@ const LabelBox = React.forwardRef<HTMLButtonElement, Props>(({label, onClick}, r
           />
         </div>
       </div>
+      <Tooltip
+        anchorSelect="#remove-label"
+        content="remove label"
+      />
+      <Tooltip
+        anchorSelect="#copy-color"
+        content="copy color"
+      />
     </button>
   )
 })
