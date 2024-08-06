@@ -40,6 +40,9 @@ You can access to `http://localhost:5173/`
 - You can move the image while drawing by holding Shift and dragging with the left mouse button.
 - You can zoom in and out of the image using Ctrl + Scroll.
 
+## Feedback
+If you have any requests or issues, please feel free to open an issue. Thank you for your attention!
+
 
 
 
