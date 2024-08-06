@@ -1,30 +1,48 @@
-# React + TypeScript + Vite
+# Segmentor 2D
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository provides a web application for image segmentation, designed to prepare 2D annotated images for training semantic segmentation models.
+However, as a segmentation tool, it does not yet offer a wide range of convenient features and remains quite basic.
 
-Currently, two official plugins are available:
+## Features
+- Support for multiple images
+- Adding mutiple labels / deleting existing labels
+- Pen / eraser tool
+- Download as .png image
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Note
+It is currently not possible to load and edit pre-masked images. This feature is planned to be added in the future.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+## Installation
+NPM have to be possible to use. Using it, dependency libraries have to be installed as node modules.
+```
+npm i
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Run
+```
+npm run dev
+```
+
+You can access to `http://localhost:5173/`
+
+<img src="./public/home.png">
+
+## Usage
+1. Add the images you want to annotate to the public/dataset/images directory.
+2. Add a label using the +add button on the left.
+3. Enter any label name and select the color you want to use.
+4. Once a label is added, click on the label to select it.
+5. Click on any area of the image where you want to draw and move the mouse. The area will be colored with a transparent fill starting from the point you clicked.
+6. If you want to erase part of the annotated area, select the eraser from the tools on the right.
+7. You can download a annotation image as PNG by clicking on download button on the right.
+
+## Tips
+- You can move the image while drawing by holding Shift and dragging with the left mouse button.
+- You can zoom in and out of the image using Ctrl + Scroll.
+
+
+
+
+
+
+
